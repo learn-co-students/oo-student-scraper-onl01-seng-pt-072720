@@ -20,32 +20,33 @@ class Scraper
   end
 
   def self.scrape_profile_page(profile_url)
-
-    profile_url = "https://learn-co-curriculum.github.io/student-scraper-test-page/students/ryan-johnson.html"
+    # profile_url = "https://learn-co-curriculum.github.io/student-scraper-test-page/students/ryan-johnson.html"
     doc = Nokogiri::HTML(open(profile_url))
     
     social_links = doc.css("div.social-icon-container a").collect do |link|
       link.attribute("href").value
     end 
 
+    social_hash = {}
+
     social_links.map do |link|
       if link.include?("twitter")
-        { twitter: link }
+        social_hash[:twitter] = link
       elsif link.include?("linkedin")
-        { linkedin: link }
+        social_hash[:linkedin] = link
       elsif link.include?("github")
-        { github: link }
+        social_hash[:github] = link
       elsif link.include?("youtube")
-        { youtube: link } 
+        social_hash[:youtube] = link 
+      else 
+        social_hash[:blog] = link 
       end 
     end 
 
-    more_social_links = {
-      profile_quote: doc.css("div.profile-quote").text.strip,
-      bio: doc.css("div.description-holder p").text.strip 
-    }
+    social_hash [:profile_quote] = doc.css("div.profile-quote").text.strip
+    social_hash [:bio] = doc.css("div.description-holder p").text.strip 
+    
+    social_hash 
   end
-
-  binding.pry 
 
 end
