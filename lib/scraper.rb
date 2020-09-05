@@ -17,25 +17,23 @@ class Scraper
 
   def self.scrape_profile_page(profile_url)
     profile = Nokogiri::HTML(open(profile_url))
-    profile_hash = profile.css('.vitals-container').map do |detail|
-      {
-        :bio => detail.css('p').text,
-        :profile_quote => detail.css('.profile-quote').text,
-        :twitter => detail.css('a').first['href'],
-        :linkedin => detail.css('a').first['href'],
-        :github => detail.css('a').last['href'],
-        :blog => detail.css('a').last['href']
-      }
+    student = {}
+    social_arr = profile.css('.social-icon-container').children.css('a').map { |i| i.attribute('href').value}
+    social_arr.each do |l|
+      if l.include?('twitter')
+        student[:twitter] = l
+      elsif l.include?('linkedin')
+        student[:linkedin] = l
+      elsif l.include?('github')
+        student[:github] = l
+      else
+        student[:blog] = l
+      end
     end
-    profile_hash[0]
+    student[:profile_quote] = profile.css('.profile-quote').text
+    student[:bio] = profile.css('.description-holder p').text
+    student
   end
 
 end
 
-# student_card = doc.css('.student-card')
-# student_names = student_card.css('.student-name').text
-# student_locations = student_card.css('.student-location').text
-# student_profile = student_card.css('a').first[href]
-
-
-#details-container
